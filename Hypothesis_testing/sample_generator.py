@@ -27,3 +27,11 @@ def generate_tukey(sample_size, mean, std, std_scale):
             result[i] = np.random.normal(mean, std)
 
     return result
+
+
+def generate_logistic(sample_size, mean, scale):
+    return np.random.logistic(mean, scale, sample_size)
+
+
+def generate_laplace(sample_size, mean, scale):
+    return np.random.laplace(mean, scale, sample_size)

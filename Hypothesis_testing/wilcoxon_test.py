@@ -13,7 +13,7 @@ def wilcoxon_statistic(x, y):
     result = 0
     for i in range(len(w)):
         if w[i][1] == 'y':
-            result += i
+            result += i + 1
     mw = len(y) * (len(x) + len(y) + 1) / 2
     dw = len(x) * len(y) * (len(x) + len(y) + 1) / 12
 

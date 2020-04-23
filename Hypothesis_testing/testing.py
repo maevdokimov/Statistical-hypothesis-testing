@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import os
 
-DELTA = 0.05
+DELTA = 0.01
 REPETITION = 100
 ALPHA = 0.05
 FREEDOM_DEGREES = 5
@@ -29,6 +29,12 @@ def do_test(distribution, test, sample_size):
             elif distribution == 'uniform':
                 x = sample_generator.generate_uniform(sample_size, 0, 1)
                 y = sample_generator.generate_uniform(sample_size, shift, 1)
+            elif distribution == 'logistic':
+                x = sample_generator.generate_logistic(sample_size, 0, 1)
+                y = sample_generator.generate_logistic(sample_size, shift, 1)
+            elif distribution == 'laplace':
+                x = sample_generator.generate_laplace(sample_size, 0, 1)
+                y = sample_generator.generate_laplace(sample_size, shift, 1)
             elif distribution == 'tukey':
                 x = sample_generator.generate_tukey(sample_size, 0, 1, 10)
                 y = sample_generator.generate_tukey(sample_size, shift, 1, 10)
@@ -59,9 +65,9 @@ def do_test(distribution, test, sample_size):
 
 
 if __name__ == "__main__":
-    distribution = {0: 't', 1: 'normal', 2: 'tukey', 3: 'uniform'}
+    distribution = {0: 't', 1: 'normal', 2: 'tukey', 3: 'uniform', 4: 'logistic', 5: 'laplace'}
     sample_size = {0: 50, 1: 100, 2: 300, 3: 500}
-    for dist in range(4):
+    for dist in range(6):
         for size in range(4):
             result_kolm = do_test(distribution[dist], 'kolmogorov', sample_size[size])
             result_t = do_test(distribution[dist], 't', sample_size[size])
