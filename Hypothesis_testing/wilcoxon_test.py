@@ -15,7 +15,7 @@ def wilcoxon_statistic(x, y):
         if w[i][1] == 'y':
             result += i + 1
     mw = len(y) * (len(x) + len(y) + 1) / 2
-    dw = len(x) * len(y) * (len(x) + len(y) + 1) / 12
+    dw = len(x) * len(y) * (len(x) + len(y) + 1) / 12.
 
     prev_elem = w[0][0]
     bound_length = 1
