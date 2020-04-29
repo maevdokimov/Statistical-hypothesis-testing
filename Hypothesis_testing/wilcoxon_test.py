@@ -45,6 +45,9 @@ def wilcoxon_test(x, y, alpha):
     standardized_w = (w - mw) / math.sqrt(dw)
     quantile = scipy.stats.norm.ppf(1 - alpha)
     return standardized_w > quantile
+    # p_value = scipy.stats.mannwhitneyu(x, y, alternative='less')[1]
+    # print(p_value < alpha)
+    # return p_value < alpha
 
 
 if __name__ == "__main__":

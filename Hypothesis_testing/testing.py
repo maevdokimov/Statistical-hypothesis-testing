@@ -90,6 +90,6 @@ if __name__ == "__main__":
             fig.set_figwidth(20)
             fig.set_figheight(16)
 
-            path = os.path.join('images', distribution[dist] + '_' + str(sample_size[size]) + '_' + '.png')
+            path = os.path.join('images_two_sided', '{}_{}.png'.format(distribution[dist], str(sample_size[size])))
             plt.savefig(path, bbox_inches='tight')
             plt.show()
