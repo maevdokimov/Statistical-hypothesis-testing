@@ -10,6 +10,5 @@ def student_statistic(x, y):
 
 
 def student_test(x, y, alpha):
-    quantileU = scipy.stats.t.ppf(1 - alpha / 2, len(x) + len(y) - 2)
-    quantileD = scipy.stats.t.ppf(alpha / 2, len(x) + len(y) - 2)
-    return student_statistic(x, y) > quantileU or student_statistic(x, y) < quantileD
+    quantile = scipy.stats.t.ppf(1 - alpha / 2, len(x) + len(y) - 2)
+    return student_statistic(x, y) > quantile or student_statistic(x, y) < -quantile

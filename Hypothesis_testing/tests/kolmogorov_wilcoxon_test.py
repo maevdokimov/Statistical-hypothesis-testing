@@ -4,8 +4,8 @@ from testing import do_test
 import matplotlib.pyplot as plt
 
 SAMPLE_SIZE = 300
-DELTA = 0.01
-REPETITION = 1000
+DELTA = 0.1
+REPETITION = 10000
 ALPHA = 0.05
 FREEDOM_DEGREES = 5
 

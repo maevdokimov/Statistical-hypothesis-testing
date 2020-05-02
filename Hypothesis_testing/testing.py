@@ -7,7 +7,7 @@ import matplotlib.pyplot as plt
 import matplotlib.ticker as ticker
 import os
 
-DELTA = 0.01
+DELTA = 0.025
 REPETITION = 100
 ALPHA = 0.05
 FREEDOM_DEGREES = 5
