@@ -2,17 +2,35 @@ import numpy as np
 import scipy.stats
 import math
 import sample_generator
+from numba import jit
 
 
+@jit(nopython=True)
 def wilcoxon_statistic(x, y):
-    x_extended = [(elem, 'x') for elem in x]
-    y_extended = [(elem, 'y') for elem in y]
-    w = np.concatenate((x_extended, y_extended))
-    w = sorted(w, key=lambda elem: elem[0])
+    x.sort()
+    y.sort()
+    w = np.zeros((x.shape[0] + y.shape[0], 2))
+    x_pos = 0
+    y_pos = 0
+    for i in range(x.shape[0] + y.shape[0]):
+        if x_pos == x.shape[0]:
+            w[i][0] = y[y_pos]
+            w[i][1] = 1
+            y_pos += 1
+        elif y_pos == y.shape[0]:
+            w[i][0] = x[x_pos]
+            x_pos += 1
+        elif x[x_pos] < y[y_pos]:
+            w[i][0] = x[x_pos]
+            x_pos += 1
+        else:
+            w[i][0] = y[y_pos]
+            w[i][1] = 1
+            y_pos += 1
 
     result = 0
     for i in range(len(w)):
-        if w[i][1] == 'y':
+        if w[i][1] == 1:
             result += i + 1
     mw = len(y) * (len(x) + len(y) + 1) / 2
     dw = len(x) * len(y) * (len(x) + len(y) + 1) / 12.
@@ -30,24 +48,16 @@ def wilcoxon_statistic(x, y):
     if bound_length > 1:
         bounds.append(bound_length)
 
-    residual_sum = 0
-    for elem in bounds:
-        residual_sum += elem * (elem ** 2 - 1)
-    dw -= len(x) * len(y) * residual_sum / (12 * (len(x) + len(y)) * (len(x) + len(y) - 1))
-    if dw < 0:
-        raise AssertionError("variance < 0 in wilcoxon test")
-
-    return result, mw, dw
+    return (result - mw) / math.sqrt(dw)
 
 
+# @jit(nopython=True)
 def wilcoxon_test(x, y, alpha):
-    w, mw, dw = wilcoxon_statistic(x, y)
-    standardized_w = (w - mw) / math.sqrt(dw)
+    # w, mw, dw = wilcoxon_statistic(x, y)
+    # standardized_w = (w - mw) / math.sqrt(dw)
+    standardized_w = wilcoxon_statistic(x, y)
     quantile = scipy.stats.norm.ppf(1 - alpha)
     return standardized_w > quantile
-    # p_value = scipy.stats.mannwhitneyu(x, y, alternative='less')[1]
-    # print(p_value < alpha)
-    # return p_value < alpha
 
 
 if __name__ == "__main__":

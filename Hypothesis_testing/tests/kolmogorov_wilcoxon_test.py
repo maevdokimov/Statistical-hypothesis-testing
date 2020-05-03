@@ -1,17 +1,75 @@
-from matplotlib import ticker
-import os
-from testing import do_test
+from kolmogorov_test import kolmogorov_test
+from student_test import student_test
+from wilcoxon_test import wilcoxon_test
+import sample_generator
+import numpy as np
 import matplotlib.pyplot as plt
+import matplotlib.ticker as ticker
+import os
+from numba import jit
 
 SAMPLE_SIZE = 300
-DELTA = 0.1
-REPETITION = 10000
+DELTA = 0.025
+REPETITION = 3000
 ALPHA = 0.05
 FREEDOM_DEGREES = 5
 
+
+# @jit(nopython=True)
+def do_test(distribution, test, sample_size):
+    results = np.empty([1, 2])
+
+    shift = 0
+    while True:
+        count = 0
+        for i in range(REPETITION):
+            if distribution == 'normal':
+                x = sample_generator.generate_normal(sample_size, 0, 1)
+                y = sample_generator.generate_normal(sample_size, shift, 1)
+            elif distribution == 't':
+                x = sample_generator.generate_t(sample_size, FREEDOM_DEGREES, 0, 1)
+                y = sample_generator.generate_t(sample_size, FREEDOM_DEGREES, shift, 1)
+            elif distribution == 'uniform':
+                x = sample_generator.generate_uniform(sample_size, 0, 1)
+                y = sample_generator.generate_uniform(sample_size, shift, 1)
+            elif distribution == 'logistic':
+                x = sample_generator.generate_logistic(sample_size, 0, 1)
+                y = sample_generator.generate_logistic(sample_size, shift, 1)
+            elif distribution == 'laplace':
+                x = sample_generator.generate_laplace(sample_size, 0, 1)
+                y = sample_generator.generate_laplace(sample_size, shift, 1)
+            elif distribution == 'tukey':
+                x = sample_generator.generate_tukey(sample_size, 0, 1, 10)
+                y = sample_generator.generate_tukey(sample_size, shift, 1, 10)
+            else:
+                raise NotImplemented('No such distribution ' + distribution)
+
+            if test == 't':
+                if student_test(x, y, ALPHA):
+                    count += 1
+            elif test == 'wilcoxon':
+                if wilcoxon_test(x, y, ALPHA):
+                    count += 1
+            elif test == 'kolmogorov':
+                if kolmogorov_test(x, y, ALPHA):
+                    count += 1
+            else:
+                raise NotImplemented('No such test ' + test)
+
+        if shift == 0:
+            results[0] = [count / REPETITION, shift]
+        else:
+            results = np.vstack((results, np.array([count / REPETITION, shift])))
+        shift += DELTA
+        if results[-1, 0] == 1:
+            break
+
+    return results
+
+
 if __name__ == "__main__":
-    result_kolm = do_test('normal', 'kolmogorov', SAMPLE_SIZE)
-    result_wilcoxon = do_test('normal', 'wilcoxon', SAMPLE_SIZE)
+    result_kolm = do_test('normal', 'kolmogorov', 300)
+    result_wilcoxon = do_test('normal', 'wilcoxon', 300)
 
     fig, ax = plt.subplots()
 
