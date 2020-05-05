@@ -10,7 +10,7 @@ import os
 from numba import jit
 
 DELTA = 0.025
-REPETITION = 6000
+REPETITION = 100
 ALPHA = 0.05
 FREEDOM_DEGREES = 5
 
@@ -98,6 +98,6 @@ if __name__ == "__main__":
             fig.set_figwidth(20)
             fig.set_figheight(16)
 
-            path = os.path.join('images_two_sided', '{}_{}.png'.format(distribution[dist], str(sample_size[size])))
+            path = os.path.join('images', '{}_{}.png'.format(distribution[dist], str(sample_size[size])))
             plt.savefig(path, bbox_inches='tight')
             plt.show()
