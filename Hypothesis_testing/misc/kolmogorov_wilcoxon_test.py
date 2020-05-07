@@ -8,9 +8,9 @@ import matplotlib.ticker as ticker
 import os
 from numba import jit
 
-SAMPLE_SIZE = 300
+SAMPLE_SIZE = 100
 DELTA = 0.025
-REPETITION = 3000
+REPETITION = 6000
 ALPHA = 0.05
 FREEDOM_DEGREES = 5
 
@@ -68,8 +68,8 @@ def do_test(distribution, test, sample_size):
 
 
 if __name__ == "__main__":
-    result_kolm = do_test('normal', 'kolmogorov', 300)
-    result_wilcoxon = do_test('normal', 'wilcoxon', 300)
+    result_kolm = do_test('normal', 'kolmogorov', SAMPLE_SIZE)
+    result_wilcoxon = do_test('normal', 'wilcoxon', SAMPLE_SIZE)
 
     fig, ax = plt.subplots()
 
@@ -87,6 +87,6 @@ if __name__ == "__main__":
     fig.set_figwidth(20)
     fig.set_figheight(16)
 
-    path = os.path.join('images', 'kolmogorov_vs_wilcoxon', "graph_{}.png".format(SAMPLE_SIZE))
+    path = os.path.join('images', 'kolmogorov_vs_wilcoxon', "strong_graph_{}.png".format(SAMPLE_SIZE))
     plt.savefig(path, bbox_inches='tight')
     plt.show()

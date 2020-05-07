@@ -1,32 +1,17 @@
 import numpy as np
-import scipy.stats
 import math
-import sample_generator
 from numba import jit
+from special import generate_array, normal_ppf
 
 
 @jit(nopython=True)
-def wilcoxon_statistic(x, y):
-    x.sort()
-    y.sort()
-    w = np.zeros((x.shape[0] + y.shape[0], 2))
-    x_pos = 0
-    y_pos = 0
-    for i in range(x.shape[0] + y.shape[0]):
-        if x_pos == x.shape[0]:
-            w[i][0] = y[y_pos]
-            w[i][1] = 1
-            y_pos += 1
-        elif y_pos == y.shape[0]:
-            w[i][0] = x[x_pos]
-            x_pos += 1
-        elif x[x_pos] < y[y_pos]:
-            w[i][0] = x[x_pos]
-            x_pos += 1
-        else:
-            w[i][0] = y[y_pos]
-            w[i][1] = 1
-            y_pos += 1
+def wilcoxon_statistic(x: np.ndarray, y: np.ndarray) -> float:
+    """
+    :param x: sample with non-shifted mean
+    :param y: sample with shifted mean
+    :return: Wilcoxon test statistic
+    """
+    w = generate_array(x, y)
 
     result = 0
     for i in range(len(w)):
@@ -51,21 +36,15 @@ def wilcoxon_statistic(x, y):
     return (result - mw) / math.sqrt(dw)
 
 
-# @jit(nopython=True)
-def wilcoxon_test(x, y, alpha):
-    # w, mw, dw = wilcoxon_statistic(x, y)
-    # standardized_w = (w - mw) / math.sqrt(dw)
-    standardized_w = wilcoxon_statistic(x, y)
-    quantile = scipy.stats.norm.ppf(1 - alpha)
-    return standardized_w > quantile
-
-
-if __name__ == "__main__":
-    # x = np.random.normal(0, 1, 100)
-    # y = np.random.normal(500, 1, 100)
-    x = sample_generator.generate_t(100, 5, 0, 1)
-    y = sample_generator.generate_t(100, 5, 500, 1)
-    w, mw, dw = wilcoxon_statistic(x, y)
-    standardized_w = (w - mw) / math.sqrt(dw)
-    print(standardized_w)
-    print(scipy.stats.norm.ppf(1 - 0.01))
+@jit(nopython=True)
+def wilcoxon_test(x: np.ndarray, y: np.ndarray, alpha: float) -> bool:
+    """
+    Performs Wilcoxon one-sided test
+    :param x: sample with non-shifted mean
+    :param y: sample with shifted mean
+    :param alpha: significance level
+    :return: True if H0 is rejected
+    """
+    statistic = wilcoxon_statistic(x, y)
+    quantile = normal_ppf(1 - alpha)
+    return statistic > quantile
